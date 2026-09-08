@@ -2,17 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import {
-  useCallback,
-  useEffect,
-  useId,
-  useMemo,
-  useState,
-  type KeyboardEvent,
-} from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { businesses } from "@/data/businesses";
 import { businessNamesBn, useLanguage } from "./LanguageProvider";
 import { Logo } from "./Logo";
+import { SearchModal } from "./SearchModal";
 
 export function Header() {
   const pathname = usePathname();
@@ -21,10 +15,8 @@ export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileBizOpen, setMobileBizOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
   const [prevPathname, setPrevPathname] = useState(pathname);
-  const searchId = useId();
 
   // Close overlays on navigation without remounting (preserves language state)
   if (pathname !== prevPathname) {
@@ -32,7 +24,6 @@ export function Header() {
     setMegaOpen(false);
     setMobileOpen(false);
     setSearchOpen(false);
-    setQuery("");
   }
 
   useEffect(() => {
@@ -99,26 +90,6 @@ export function Header() {
     href === "/"
       ? pathname === "/"
       : pathname === href || pathname.startsWith(`${href}/`);
-
-  const searchResults = useMemo(() => {
-    if (!query.trim()) return [];
-    const q = query.trim().toLowerCase();
-    return [
-      ...navItems.map((n) => ({ label: n.label, href: n.href, kind: t.page })),
-      { label: t.contact, href: "/contact", kind: t.page },
-      ...businesses.map((b) => ({
-        label: locale === "bn" ? businessNamesBn[b.slug] || b.name : b.name,
-        href: `/businesses/${b.slug}`,
-        kind: t.business,
-      })),
-    ].filter((item) => item.label.toLowerCase().includes(q));
-  }, [query, navItems, t, locale]);
-
-  const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" && searchResults[0]) {
-      window.location.assign(searchResults[0].href);
-    }
-  };
 
   return (
     <>
@@ -209,26 +180,39 @@ export function Header() {
               type="button"
               aria-label={t.openSearch}
               onClick={() => setSearchOpen(true)}
-              className="ml-1.5 flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-[#4A5568] transition hover:border-blue hover:text-blue focus-visible:border-blue"
+              className="search-trigger ml-1.5"
             >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" aria-hidden>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden>
                 <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
                 <path d="M16 16l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
             </button>
           </nav>
 
-          <button
-            type="button"
-            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
-            aria-label={t.openMenu}
-            aria-expanded={mobileOpen}
-            onClick={() => setMobileOpen(true)}
-          >
-            <span className="block h-[1.5px] w-6 bg-ink" />
-            <span className="block h-[1.5px] w-6 bg-ink" />
-            <span className="block h-[1.5px] w-6 bg-ink" />
-          </button>
+          <div className="flex items-center gap-1 lg:hidden">
+            <button
+              type="button"
+              aria-label={t.openSearch}
+              onClick={() => setSearchOpen(true)}
+              className="flex h-10 w-10 items-center justify-center text-ink"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden>
+                <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
+                <path d="M16 16l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+            <button
+              type="button"
+              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+              aria-label={t.openMenu}
+              aria-expanded={mobileOpen}
+              onClick={() => setMobileOpen(true)}
+            >
+              <span className="block h-[1.5px] w-6 bg-ink" />
+              <span className="block h-[1.5px] w-6 bg-ink" />
+              <span className="block h-[1.5px] w-6 bg-ink" />
+            </button>
+          </div>
         </div>
 
         {megaOpen && (
@@ -382,75 +366,7 @@ export function Header() {
         </div>
       )}
 
-      {searchOpen && (
-        <div className="fixed inset-0 z-[70] flex items-start justify-center bg-ink/50 px-4 pt-[12vh] backdrop-blur-sm">
-          <div
-            className="w-full max-w-xl animate-rise rounded-sm border border-line bg-white shadow-2xl"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={searchId}
-          >
-            <div className="flex items-center gap-3 border-b border-line px-4">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                className="text-muted"
-                aria-hidden
-              >
-                <circle cx="11" cy="11" r="6.5" stroke="currentColor" strokeWidth="2" />
-                <path d="M16 16l5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <input
-                id={searchId}
-                autoFocus
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                onKeyDown={onSearchKeyDown}
-                placeholder={t.search}
-                className="h-14 flex-1 bg-transparent text-[15px] outline-none"
-                autoComplete="off"
-                spellCheck={false}
-              />
-              <button
-                type="button"
-                className="text-sm text-muted hover:text-ink"
-                onClick={() => setSearchOpen(false)}
-              >
-                Esc
-              </button>
-            </div>
-            <div className="max-h-80 overflow-y-auto p-2">
-              {query.trim() === "" && (
-                <p className="px-3 py-4 text-sm text-muted">{t.searchHint}</p>
-              )}
-              {query.trim() && searchResults.length === 0 && (
-                <p className="px-3 py-4 text-sm text-muted">{t.noMatches}</p>
-              )}
-              {searchResults.map((item) => (
-                <Link
-                  key={item.href + item.label}
-                  href={item.href}
-                  className="flex items-center justify-between rounded-sm px-3 py-3 transition hover:bg-wash"
-                  onClick={closeOverlays}
-                >
-                  <span className="font-medium text-ink">{item.label}</span>
-                  <span className="text-xs uppercase tracking-wider text-muted">
-                    {item.kind}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </div>
-          <button
-            type="button"
-            aria-label={t.closeMenu}
-            className="absolute inset-0 -z-10 cursor-default"
-            onClick={() => setSearchOpen(false)}
-          />
-        </div>
-      )}
+      <SearchModal open={searchOpen} onClose={() => setSearchOpen(false)} />
     </>
   );
 }

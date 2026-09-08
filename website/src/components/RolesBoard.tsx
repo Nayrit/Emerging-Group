@@ -1,18 +1,46 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useLanguage } from "@/components/LanguageProvider";
 import { roles, type Role } from "@/data/careers";
 
-const verticals = ["All verticals", ...Array.from(new Set(roles.map((r) => r.vertical)))];
-const locations = ["All locations", ...Array.from(new Set(roles.map((r) => r.location)))];
-const functions = ["Function", ...Array.from(new Set(roles.map((r) => r.function)))];
+const ALL_VERTICALS = "All verticals";
+const ALL_LOCATIONS = "All locations";
+const ALL_FUNCTIONS = "Function";
+
+const uniqueVerticals = Array.from(new Set(roles.map((r) => r.vertical)));
+const uniqueLocations = Array.from(new Set(roles.map((r) => r.location)));
+const uniqueFunctions = Array.from(new Set(roles.map((r) => r.function)));
 
 export function RolesBoard() {
+  const { t } = useLanguage();
   const [query, setQuery] = useState("");
-  const [vertical, setVertical] = useState("All verticals");
-  const [location, setLocation] = useState("All locations");
-  const [fn, setFn] = useState("Function");
+  const [vertical, setVertical] = useState(ALL_VERTICALS);
+  const [location, setLocation] = useState(ALL_LOCATIONS);
+  const [fn, setFn] = useState(ALL_FUNCTIONS);
   const [showAll, setShowAll] = useState(false);
+
+  const verticalOptions = useMemo(
+    () => [
+      { value: ALL_VERTICALS, label: t.allVerticals },
+      ...uniqueVerticals.map((v) => ({ value: v, label: v })),
+    ],
+    [t],
+  );
+  const locationOptions = useMemo(
+    () => [
+      { value: ALL_LOCATIONS, label: t.allLocations },
+      ...uniqueLocations.map((v) => ({ value: v, label: v })),
+    ],
+    [t],
+  );
+  const functionOptions = useMemo(
+    () => [
+      { value: ALL_FUNCTIONS, label: t.function },
+      ...uniqueFunctions.map((v) => ({ value: v, label: v })),
+    ],
+    [t],
+  );
 
   const filtered = useMemo(() => {
     return roles.filter((role) => {
@@ -22,10 +50,10 @@ export function RolesBoard() {
         role.title.toLowerCase().includes(q) ||
         role.vertical.toLowerCase().includes(q);
       const matchesVertical =
-        vertical === "All verticals" || role.vertical === vertical;
+        vertical === ALL_VERTICALS || role.vertical === vertical;
       const matchesLocation =
-        location === "All locations" || role.location === location;
-      const matchesFn = fn === "Function" || role.function === fn;
+        location === ALL_LOCATIONS || role.location === location;
+      const matchesFn = fn === ALL_FUNCTIONS || role.function === fn;
       return matchesQuery && matchesVertical && matchesLocation && matchesFn;
     });
   }, [query, vertical, location, fn]);
@@ -36,9 +64,11 @@ export function RolesBoard() {
     <div>
       <div className="mb-7 flex items-baseline justify-between">
         <h2 className="font-serif text-[30px] font-normal text-ink md:text-[34px]">
-          Open roles
+          {t.openRoles}
         </h2>
-        <span className="text-[13px] text-muted">{filtered.length} positions</span>
+        <span className="text-[13px] text-muted">
+          {filtered.length} {t.positions}
+        </span>
       </div>
 
       <div className="mb-7 grid gap-3 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
@@ -47,20 +77,20 @@ export function RolesBoard() {
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search roles"
+            placeholder={t.searchRoles}
             className="w-full bg-transparent text-[13.5px] outline-none! placeholder:text-muted"
           />
         </label>
-        <Select value={vertical} onChange={setVertical} options={verticals} />
-        <Select value={location} onChange={setLocation} options={locations} />
-        <Select value={fn} onChange={setFn} options={functions} />
+        <Select value={vertical} onChange={setVertical} options={verticalOptions} />
+        <Select value={location} onChange={setLocation} options={locationOptions} />
+        <Select value={fn} onChange={setFn} options={functionOptions} />
       </div>
 
       <div className="hidden overflow-hidden border border-line bg-white md:block">
         <div className="grid grid-cols-[2.4fr_1.4fr_1.1fr_0.9fr_auto] gap-5 border-b border-line bg-wash px-7 py-4">
-          {["Role", "Vertical", "Location", "Type", ""].map((h) => (
+          {[t.role, t.vertical, t.location, t.type, ""].map((h, i) => (
             <span
-              key={h || "action"}
+              key={h || `action-${i}`}
               className="text-[10.5px] uppercase tracking-[0.14em] text-muted"
             >
               {h}
@@ -68,12 +98,10 @@ export function RolesBoard() {
           ))}
         </div>
         {visible.map((role) => (
-          <RoleRow key={role.id} role={role} />
+          <RoleRow key={role.id} role={role} applyLabel={t.apply} />
         ))}
         {visible.length === 0 && (
-          <div className="px-7 py-10 text-sm text-muted">
-            No roles match these filters.
-          </div>
+          <div className="px-7 py-10 text-sm text-muted">{t.noRoles}</div>
         )}
       </div>
 
@@ -95,7 +123,7 @@ export function RolesBoard() {
                 {role.location}
               </span>
             </div>
-            <span className="link-arrow mt-0.5">Apply →</span>
+            <span className="link-arrow mt-0.5">{t.apply}</span>
           </a>
         ))}
       </div>
@@ -107,7 +135,7 @@ export function RolesBoard() {
             onClick={() => setShowAll(true)}
             className="btn btn-outline h-[46px] px-[26px] text-[13.5px]"
           >
-            Load all {filtered.length} roles
+            {t.loadAllRoles.replace("{n}", String(filtered.length))}
           </button>
         </div>
       )}
@@ -122,7 +150,7 @@ function Select({
 }: {
   value: string;
   onChange: (v: string) => void;
-  options: string[];
+  options: { value: string; label: string }[];
 }) {
   return (
     <div className="relative h-[46px] border border-line-strong bg-white">
@@ -132,8 +160,8 @@ function Select({
         className="h-full w-full appearance-none bg-transparent px-3.5 pr-8 text-[13.5px] text-body-strong outline-none!"
       >
         {options.map((opt) => (
-          <option key={opt} value={opt}>
-            {opt}
+          <option key={opt.value} value={opt.value}>
+            {opt.label}
           </option>
         ))}
       </select>
@@ -144,7 +172,7 @@ function Select({
   );
 }
 
-function RoleRow({ role }: { role: Role }) {
+function RoleRow({ role, applyLabel }: { role: Role; applyLabel: string }) {
   return (
     <a
       href={`mailto:careers@emerginggroup.com.bd?subject=Application: ${encodeURIComponent(role.title)}`}
@@ -154,7 +182,7 @@ function RoleRow({ role }: { role: Role }) {
       <span className="text-[13.5px] text-body">{role.vertical}</span>
       <span className="text-[13.5px] text-body">{role.location}</span>
       <span className="text-[13.5px] text-body">{role.type}</span>
-      <span className="text-[13px] font-medium text-blue">Apply →</span>
+      <span className="text-[13px] font-medium text-blue">{applyLabel}</span>
     </a>
   );
 }

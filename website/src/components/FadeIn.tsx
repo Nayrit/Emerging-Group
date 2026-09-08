@@ -15,6 +15,7 @@ export function FadeIn({ children, className = "", delay = 0 }: FadeInProps) {
   useEffect(() => {
     const node = ref.current;
     if (!node) return;
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -22,7 +23,7 @@ export function FadeIn({ children, className = "", delay = 0 }: FadeInProps) {
           observer.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" },
+      { threshold: 0.08, rootMargin: "0px 0px -24px 0px" },
     );
     observer.observe(node);
     return () => observer.disconnect();
@@ -31,11 +32,11 @@ export function FadeIn({ children, className = "", delay = 0 }: FadeInProps) {
   return (
     <div
       ref={ref}
-      className={className}
+      className={`motion-safe:will-change-transform ${className}`}
       style={{
-        opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(22px)",
-        transition: `opacity 0.7s ease ${delay}ms, transform 0.7s ease ${delay}ms`,
+        // Never fade opacity — avoids grey divider backgrounds bleeding through
+        transform: visible ? "translateY(0)" : "translateY(16px)",
+        transition: `transform 0.65s ease ${delay}ms`,
       }}
     >
       {children}

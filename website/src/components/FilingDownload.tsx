@@ -1,5 +1,7 @@
 "use client";
 
+import { useLanguage } from "@/components/LanguageProvider";
+
 type Filing = {
   title: string;
   meta: string;
@@ -7,6 +9,7 @@ type Filing = {
 };
 
 export function FilingDownload({ filing }: { filing: Filing }) {
+  const { t } = useLanguage();
   const subject = encodeURIComponent(`Document request: ${filing.title}`);
   const body = encodeURIComponent(
     `Hello Investor Relations,\n\nPlease send the latest copy of "${filing.title}" (${filing.meta}, ${filing.date}).\n\nThank you.`,
@@ -19,7 +22,7 @@ export function FilingDownload({ filing }: { filing: Filing }) {
       className="self-start text-[13px] font-medium text-blue transition hover:text-ink sm:self-auto"
       aria-label={`Request download of ${filing.title}`}
     >
-      Request PDF →
+      {t.requestPdf}
     </a>
   );
 }

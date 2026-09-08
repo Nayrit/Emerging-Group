@@ -56,7 +56,7 @@ export function HomeContent() {
               {t.groupFactSheet}
             </Link>
           </div>
-          <div className="grid gap-8 border-line md:grid-cols-3 md:gap-px md:bg-line">
+          <div className="grid gap-8 md:grid-cols-3 md:gap-0">
             {[
               {
                 value: "2002",
@@ -83,11 +83,13 @@ export function HomeContent() {
                     : "FMCG, pharmaceutical, export and public-sector counterparties across 20 markets.",
                 accentPlus: true,
               },
-            ].map((item, i) => (
+            ].map((item, i, arr) => (
               <FadeIn
                 key={item.label}
                 delay={i * 80}
-                className="bg-white md:px-10 md:first:pl-0 md:last:pr-0"
+                className={`md:px-10 ${i === 0 ? "md:pl-0" : ""} ${
+                  i === arr.length - 1 ? "md:pr-0" : ""
+                } ${i < arr.length - 1 ? "md:border-r md:border-line" : ""}`}
               >
                 <div className="flex flex-col gap-3 border-b border-line pb-6 md:border-0 md:pb-0">
                   <div className="text-[48px] font-bold leading-none tracking-[-0.02em] text-ink md:text-[56px]">

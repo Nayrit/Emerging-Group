@@ -198,7 +198,7 @@ export default function HomePage() {
               Investor centre →
             </Link>
           </div>
-          <div className="hidden h-13 bg-line lg:block" />
+          <div className="hidden h-[52px] bg-line lg:block" />
           <div className="flex flex-col gap-1.5">
             <div className="text-[10.5px] uppercase tracking-[0.14em] text-muted">
               Group turnover FY25

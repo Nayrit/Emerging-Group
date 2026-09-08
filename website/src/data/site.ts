@@ -21,14 +21,18 @@ export const site = {
   },
 };
 
-export const navMain = [
+export const navMain: {
+  label: string;
+  href: string;
+  hasMega?: boolean;
+}[] = [
   { label: "About", href: "/about" },
   { label: "Businesses", href: "/businesses", hasMega: true },
   { label: "Sustainability", href: "/sustainability" },
   { label: "Investors", href: "/investors" },
   { label: "Newsroom", href: "/newsroom" },
   { label: "Careers", href: "/careers" },
-] as const;
+];
 
 export const navUtility = [
   { label: "Investor Relations", href: "/investors" },

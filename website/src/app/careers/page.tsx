@@ -3,17 +3,45 @@ import Link from "next/link";
 import { FadeIn } from "@/components/FadeIn";
 import { MediaBlock } from "@/components/MediaBlock";
 import { RolesBoard } from "@/components/RolesBoard";
-import { careerPillars } from "@/data/careers";
+import { careerPillars, roles } from "@/data/careers";
+import { JsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "Careers",
   description:
     "Build the industries the country depends on. Explore open roles across Emerging Group.",
+  alternates: { canonical: "/careers" },
 };
 
 export default function CareersPage() {
+  const jobPostings = roles.map((role) => ({
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: role.title,
+    employmentType: role.type === "Full time" ? "FULL_TIME" : "CONTRACTOR",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "Emerging Group",
+      sameAs: "https://emerginggroup.com.bd",
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: role.location,
+        addressCountry: "BD",
+      },
+    },
+    description: `${role.title} — ${role.vertical} · ${role.function}`,
+    datePosted: "2026-08-01",
+    validThrough: "2026-12-31",
+    directApply: true,
+    url: "https://emerginggroup.com.bd/careers#roles",
+  }));
+
   return (
     <>
+      <JsonLd data={jobPostings} />
       <section className="relative min-h-[400px] overflow-hidden bg-ink md:min-h-[440px]">
         <div className="absolute inset-0">
           <MediaBlock className="h-full w-full" label="Team on site" accent="green" />

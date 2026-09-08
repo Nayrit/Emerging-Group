@@ -3,18 +3,31 @@ import Link from "next/link";
 import { FadeIn } from "@/components/FadeIn";
 import { MediaBlock } from "@/components/MediaBlock";
 import { PageHero } from "@/components/PageHero";
-import { businesses } from "@/data/businesses";
 import { leadership, milestones, site } from "@/data/site";
+import { absoluteUrl, breadcrumbJsonLd, JsonLd } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: "About",
   description:
     "Executive overview of Emerging Group — mission, vision, milestones and leadership.",
+  alternates: { canonical: "/about" },
+  openGraph: {
+    title: "About Emerging Group",
+    description:
+      "Two decades of disciplined growth, built around national self-reliance and domestic supply security.",
+    url: absoluteUrl("/about"),
+  },
 };
 
 export default function AboutPage() {
   return (
     <>
+      <JsonLd
+        data={breadcrumbJsonLd([
+          { name: "Home", path: "/" },
+          { name: "About", path: "/about" },
+        ])}
+      />
       <section className="relative overflow-hidden bg-ink text-white">
         <div className="absolute inset-0 opacity-35">
           <MediaBlock className="h-full min-h-[420px] w-full" />

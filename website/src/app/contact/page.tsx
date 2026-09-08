@@ -7,6 +7,7 @@ import { enquiryRoutes, site } from "@/data/site";
 export const metadata: Metadata = {
   title: "Contact",
   description: "Contact Emerging Group head office in Gulshan, Dhaka.",
+  alternates: { canonical: "/contact" },
 };
 
 export default function ContactPage() {

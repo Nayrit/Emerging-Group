@@ -9,6 +9,7 @@ export const metadata: Metadata = {
   title: "Businesses",
   description:
     "Six verticals, one integrated ecosystem — packaging, agro-chemicals, infrastructure, trading, software and media.",
+  alternates: { canonical: "/businesses" },
 };
 
 export default function BusinessesPage() {

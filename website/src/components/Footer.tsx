@@ -86,9 +86,12 @@ export function Footer() {
           <Link href="/terms" className="text-[11.5px] text-white/45 hover:text-white/70">
             Terms
           </Link>
-          <span className="text-[11.5px] text-white/45">
+          <Link
+            href="/terms#modern-slavery"
+            className="text-[11.5px] text-white/45 hover:text-white/70"
+          >
             Modern slavery statement
-          </span>
+          </Link>
         </div>
       </div>
     </footer>

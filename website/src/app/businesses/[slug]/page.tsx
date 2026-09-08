@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { FadeIn } from "@/components/FadeIn";
 import { MediaBlock } from "@/components/MediaBlock";
 import { businesses, getBusiness } from "@/data/businesses";
+import { breadcrumbJsonLd, JsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -14,10 +15,16 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const biz = getBusiness(slug);
-  if (!biz) return { title: "Business" };
+  if (!biz) return { title: "Business", robots: { index: false } };
   return {
     title: biz.name,
     description: biz.summary,
+    alternates: { canonical: `/businesses/${biz.slug}` },
+    openGraph: {
+      title: `${biz.name} | Emerging Group`,
+      description: biz.summary,
+      url: `/businesses/${biz.slug}`,
+    },
   };
 }
 
@@ -30,6 +37,28 @@ export default async function BusinessDetailPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Businesses", path: "/businesses" },
+            { name: biz.name, path: `/businesses/${biz.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name: biz.name,
+            description: biz.summary,
+            provider: {
+              "@type": "Organization",
+              name: "Emerging Group",
+              url: "https://emerginggroup.com.bd",
+            },
+            areaServed: "BD",
+            url: `https://emerginggroup.com.bd/businesses/${biz.slug}`,
+          },
+        ]}
+      />
       <section className="relative min-h-[420px] overflow-hidden bg-ink md:min-h-[480px]">
         <div className="absolute inset-0">
           <MediaBlock className="h-full w-full" label={biz.category} />

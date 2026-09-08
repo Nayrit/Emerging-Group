@@ -1,14 +1,37 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { CountUp } from "@/components/CountUp";
 import { FadeIn } from "@/components/FadeIn";
 import { MediaBlock } from "@/components/MediaBlock";
 import { businesses } from "@/data/businesses";
 import { news } from "@/data/news";
 import { site } from "@/data/site";
+import { absoluteUrl, JsonLd } from "@/lib/seo";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "Emerging Group | Diversified Enterprise Group Bangladesh",
+  },
+  alternates: { canonical: "/" },
+  openGraph: {
+    title: "Emerging Group | Bangladesh",
+    url: absoluteUrl("/"),
+  },
+};
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={{
+          "@context": "https://schema.org",
+          "@type": "WebPage",
+          name: "Emerging Group Bangladesh",
+          description: site.tagline,
+          url: absoluteUrl("/"),
+          about: { "@id": "https://emerginggroup.com.bd/#organization" },
+        }}
+      />
       <section className="relative min-h-[560px] overflow-hidden bg-ink md:min-h-[620px]">
         <div className="absolute inset-0">
           <MediaBlock className="h-full w-full" label="Corporate campus" />

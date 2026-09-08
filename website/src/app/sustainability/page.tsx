@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   title: "Sustainability",
   description:
     "People, Planet and Enterprise Profitability — Emerging Group's triple-bottom-line approach.",
+  alternates: { canonical: "/sustainability" },
 };
 
 const pillars = [

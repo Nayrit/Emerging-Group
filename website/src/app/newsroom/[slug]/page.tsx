@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MediaBlock } from "@/components/MediaBlock";
 import { getNews, news } from "@/data/news";
+import { breadcrumbJsonLd, JsonLd } from "@/lib/seo";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -13,8 +14,19 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const item = getNews(slug);
-  if (!item) return { title: "News" };
-  return { title: item.title, description: item.excerpt };
+  if (!item) return { title: "News", robots: { index: false } };
+  return {
+    title: item.title,
+    description: item.excerpt,
+    alternates: { canonical: `/newsroom/${item.slug}` },
+    openGraph: {
+      type: "article",
+      title: item.title,
+      description: item.excerpt,
+      publishedTime: item.date,
+      url: `/newsroom/${item.slug}`,
+    },
+  };
 }
 
 export default async function NewsArticlePage({ params }: Props) {
@@ -26,7 +38,38 @@ export default async function NewsArticlePage({ params }: Props) {
 
   return (
     <>
-      <article>
+      <JsonLd
+        data={[
+          breadcrumbJsonLd([
+            { name: "Home", path: "/" },
+            { name: "Newsroom", path: "/newsroom" },
+            { name: item.title, path: `/newsroom/${item.slug}` },
+          ]),
+          {
+            "@context": "https://schema.org",
+            "@type": "NewsArticle",
+            headline: item.title,
+            datePublished: item.date,
+            dateModified: item.date,
+            description: item.excerpt,
+            articleSection: item.category,
+            author: {
+              "@type": "Organization",
+              name: "Emerging Group",
+            },
+            publisher: {
+              "@type": "Organization",
+              name: "Emerging Group",
+              logo: {
+                "@type": "ImageObject",
+                url: "https://emerginggroup.com.bd/brand/logo.png",
+              },
+            },
+            mainEntityOfPage: `https://emerginggroup.com.bd/newsroom/${item.slug}`,
+          },
+        ]}
+      />
+      <article itemScope itemType="https://schema.org/NewsArticle">
         <header className="border-b border-line bg-white py-12 md:py-16">
           <div className="container-x max-w-3xl">
             <nav className="mb-6 flex items-center gap-2.5 text-[11.5px] text-muted">

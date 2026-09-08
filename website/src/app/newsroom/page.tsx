@@ -8,6 +8,7 @@ import { news } from "@/data/news";
 export const metadata: Metadata = {
   title: "Newsroom",
   description: "Latest news and announcements from Emerging Group Bangladesh.",
+  alternates: { canonical: "/newsroom" },
 };
 
 export default function NewsroomPage() {

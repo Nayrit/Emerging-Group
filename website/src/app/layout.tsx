@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Archivo, Newsreader } from "next/font/google";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { Providers } from "@/components/Providers";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import {
   defaultDescription,
@@ -98,15 +99,21 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${archivo.variable} ${newsreader.variable} h-full`}>
-      <body className="flex min-h-full flex-col antialiased">
-        <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
-        <Header />
-        <main id="main-content" className="flex-1" tabIndex={-1}>
-          {children}
-        </main>
-        <Footer />
-        <ScrollToTop />
+    <html
+      lang="en"
+      className={`${archivo.variable} ${newsreader.variable} h-full`}
+      suppressHydrationWarning
+    >
+      <body className="flex min-h-full flex-col antialiased" suppressHydrationWarning>
+        <Providers>
+          <JsonLd data={[organizationJsonLd(), websiteJsonLd()]} />
+          <Header />
+          <main id="main-content" className="flex-1" tabIndex={-1}>
+            {children}
+          </main>
+          <Footer />
+          <ScrollToTop />
+        </Providers>
       </body>
     </html>
   );

@@ -61,12 +61,18 @@ export default function CareersPage() {
       </section>
 
       <section className="bg-white py-16 md:py-[88px]">
-        <div className="container-x grid gap-10 md:grid-cols-3 md:gap-px md:bg-line">
+        <div className="container-x grid gap-10 md:grid-cols-3 md:gap-0">
           {careerPillars.map((pillar, i) => (
             <FadeIn
               key={pillar.tag}
               delay={i * 80}
-              className="bg-white md:px-10 md:first:pl-0 md:last:pr-0"
+              className={`md:px-10 ${
+                i === 0 ? "md:pl-0" : ""
+              } ${i === careerPillars.length - 1 ? "md:pr-0" : ""} ${
+                i < careerPillars.length - 1
+                  ? "md:border-r md:border-line"
+                  : ""
+              }`}
             >
               <div className="mb-3 text-[11px] uppercase tracking-[0.16em] text-blue">
                 {pillar.tag}

@@ -1,9 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useLanguage } from "./LanguageProvider";
 
 export function ScrollToTop() {
   const [visible, setVisible] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const onScroll = () => {
@@ -23,7 +25,7 @@ export function ScrollToTop() {
   return (
     <button
       type="button"
-      aria-label="Back to top"
+      aria-label={t.backToTop}
       className="fixed bottom-6 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-sm bg-ink text-white shadow-lg transition hover:bg-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue md:bottom-8 md:right-8"
       onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
     >

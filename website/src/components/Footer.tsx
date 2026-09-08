@@ -1,9 +1,19 @@
+"use client";
+
 import Link from "next/link";
 import { businesses } from "@/data/businesses";
 import { site } from "@/data/site";
+import { businessNamesBn, useLanguage } from "./LanguageProvider";
 import { Logo } from "./Logo";
 
+const COPYRIGHT_YEAR = 2026;
+
 export function Footer() {
+  const { locale, t } = useLanguage();
+
+  const bizLabel = (slug: string, fallback: string) =>
+    locale === "bn" ? businessNamesBn[slug] || fallback : fallback;
+
   return (
     <footer className="bg-ink text-white">
       <div className="container-x grid gap-12 border-b border-white/15 py-16 md:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:gap-12 lg:pb-14 lg:pt-[72px]">
@@ -22,25 +32,25 @@ export function Footer() {
 
         <div className="flex flex-col gap-3.5">
           <div className="text-[10px] uppercase tracking-[0.16em] text-blue-soft">
-            Group
+            {t.group}
           </div>
           <Link href="/about" className="text-[13.5px] text-white/82 hover:text-white">
-            About us
+            {t.aboutUs}
           </Link>
           <Link href="/about#leadership" className="text-[13.5px] text-white/82 hover:text-white">
-            Leadership
+            {t.leadership}
           </Link>
           <Link href="/sustainability" className="text-[13.5px] text-white/82 hover:text-white">
-            Sustainability
+            {t.sustainability}
           </Link>
           <Link href="/investors" className="text-[13.5px] text-white/82 hover:text-white">
-            Governance
+            {t.governance}
           </Link>
         </div>
 
         <div className="flex flex-col gap-3.5">
           <div className="text-[10px] uppercase tracking-[0.16em] text-blue-soft">
-            Businesses
+            {t.businesses}
           </div>
           {businesses.slice(0, 3).map((b) => (
             <Link
@@ -48,49 +58,49 @@ export function Footer() {
               href={`/businesses/${b.slug}`}
               className="text-[13.5px] text-white/82 hover:text-white"
             >
-              {b.shortName}
+              {bizLabel(b.slug, b.shortName)}
             </Link>
           ))}
           <Link href="/businesses" className="text-[13.5px] text-white/82 hover:text-white">
-            Trading · IT · Media
+            {t.tradingItMedia}
           </Link>
         </div>
 
         <div className="flex flex-col gap-3.5">
           <div className="text-[10px] uppercase tracking-[0.16em] text-blue-soft">
-            Connect
+            {t.connect}
           </div>
           <Link href="/careers" className="text-[13.5px] text-white/82 hover:text-white">
-            Careers
+            {t.careers}
           </Link>
           <Link href="/newsroom" className="text-[13.5px] text-white/82 hover:text-white">
-            Newsroom
+            {t.newsroom}
           </Link>
           <Link href="/investors" className="text-[13.5px] text-white/82 hover:text-white">
-            Investor relations
+            {t.investorRelations}
           </Link>
           <Link href="/contact" className="text-[13.5px] text-white/82 hover:text-white">
-            Contact
+            {t.contact}
           </Link>
         </div>
       </div>
 
       <div className="container-x flex flex-col gap-3 py-6 sm:flex-row sm:items-center sm:justify-between">
         <span className="text-[11.5px] text-white/45">
-          © {new Date().getFullYear()} Emerging Group. All rights reserved.
+          {t.rights.replace("{year}", String(COPYRIGHT_YEAR))}
         </span>
         <div className="flex flex-wrap gap-6">
           <Link href="/privacy" className="text-[11.5px] text-white/45 hover:text-white/70">
-            Privacy
+            {t.privacy}
           </Link>
           <Link href="/terms" className="text-[11.5px] text-white/45 hover:text-white/70">
-            Terms
+            {t.terms}
           </Link>
           <Link
             href="/terms#modern-slavery"
             className="text-[11.5px] text-white/45 hover:text-white/70"
           >
-            Modern slavery statement
+            {t.modernSlavery}
           </Link>
         </div>
       </div>

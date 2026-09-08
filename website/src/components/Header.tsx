@@ -11,79 +11,38 @@ import {
   type KeyboardEvent,
 } from "react";
 import { businesses } from "@/data/businesses";
-import { navMain, navUtility } from "@/data/site";
+import { businessNamesBn, useLanguage } from "./LanguageProvider";
 import { Logo } from "./Logo";
-
-type Locale = "en" | "bn";
-
-const copy = {
-  en: {
-    search: "Search the Group",
-    searchHint: 'Try "Packaging", "Careers", or "Investors".',
-    noMatches: "No matches found.",
-    contact: "Contact us",
-    allBusinesses: "All businesses",
-    ourBusinesses: "Our businesses",
-    megaBlurb: "Six verticals, one integrated operating ecosystem.",
-    viewAll: "View all businesses →",
-    page: "Page",
-    business: "Business",
-  },
-  bn: {
-    search: "গ্রুপে খুঁজুন",
-    searchHint: '"Packaging", "Careers" বা "Investors" চেষ্টা করুন।',
-    noMatches: "কোনো ফলাফল নেই।",
-    contact: "যোগাযোগ করুন",
-    allBusinesses: "সব ব্যবসা",
-    ourBusinesses: "আমাদের ব্যবসা",
-    megaBlurb: "ছয়টি উল্লম্ব, একটি সমন্বিত ইকোসিস্টেম।",
-    viewAll: "সব ব্যবসা দেখুন →",
-    page: "পৃষ্ঠা",
-    business: "ব্যবসা",
-  },
-} as const;
 
 export function Header() {
   const pathname = usePathname();
-  return <HeaderChrome key={pathname} pathname={pathname} />;
-}
-
-function HeaderChrome({ pathname }: { pathname: string }) {
+  const { locale, setLocale, t } = useLanguage();
   const [megaOpen, setMegaOpen] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [mobileBizOpen, setMobileBizOpen] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [scrolled, setScrolled] = useState(false);
-  const [locale, setLocale] = useState<Locale>("en");
+  const [prevPathname, setPrevPathname] = useState(pathname);
   const searchId = useId();
-  const t = copy[locale];
 
-  useEffect(() => {
-    try {
-      const saved = window.localStorage.getItem("eg-locale");
-      if (saved === "en" || saved === "bn") {
-        window.queueMicrotask(() => setLocale(saved));
-      }
-    } catch {
-      // ignore storage access errors
-    }
-  }, []);
-
-  useEffect(() => {
-    document.documentElement.lang = locale === "bn" ? "bn" : "en";
-    try {
-      window.localStorage.setItem("eg-locale", locale);
-    } catch {
-      // ignore
-    }
-  }, [locale]);
+  // Close overlays on navigation without remounting (preserves language state)
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setMegaOpen(false);
+    setMobileOpen(false);
+    setSearchOpen(false);
+    setQuery("");
+  }
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
-    onScroll();
+    const id = window.requestAnimationFrame(onScroll);
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.cancelAnimationFrame(id);
+      window.removeEventListener("scroll", onScroll);
+    };
   }, []);
 
   useEffect(() => {
@@ -111,6 +70,31 @@ function HeaderChrome({ pathname }: { pathname: string }) {
     return () => window.removeEventListener("keydown", onKey);
   }, [closeOverlays]);
 
+  const navItems = useMemo(
+    () => [
+      { label: t.about, href: "/about" },
+      { label: t.businesses, href: "/businesses", hasMega: true },
+      { label: t.sustainability, href: "/sustainability" },
+      { label: t.investors, href: "/investors" },
+      { label: t.newsroom, href: "/newsroom" },
+      { label: t.careers, href: "/careers" },
+    ],
+    [t],
+  );
+
+  const utilityItems = useMemo(
+    () => [
+      { label: t.investorRelations, href: "/investors" },
+      { label: t.mediaCentre, href: "/newsroom" },
+      { label: t.suppliers, href: "/contact" },
+      { label: t.contact, href: "/contact" },
+    ],
+    [t],
+  );
+
+  const bizLabel = (slug: string, fallback: string) =>
+    locale === "bn" ? businessNamesBn[slug] || fallback : fallback;
+
   const isActive = (href: string) =>
     href === "/"
       ? pathname === "/"
@@ -120,15 +104,15 @@ function HeaderChrome({ pathname }: { pathname: string }) {
     if (!query.trim()) return [];
     const q = query.trim().toLowerCase();
     return [
-      ...navMain.map((n) => ({ label: n.label, href: n.href, kind: t.page })),
-      { label: "Contact", href: "/contact", kind: t.page },
+      ...navItems.map((n) => ({ label: n.label, href: n.href, kind: t.page })),
+      { label: t.contact, href: "/contact", kind: t.page },
       ...businesses.map((b) => ({
-        label: b.name,
+        label: locale === "bn" ? businessNamesBn[b.slug] || b.name : b.name,
         href: `/businesses/${b.slug}`,
         kind: t.business,
       })),
     ].filter((item) => item.label.toLowerCase().includes(q));
-  }, [query, t.page, t.business]);
+  }, [query, navItems, t, locale]);
 
   const onSearchKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && searchResults[0]) {
@@ -139,12 +123,12 @@ function HeaderChrome({ pathname }: { pathname: string }) {
   return (
     <>
       <a href="#main-content" className="skip-link">
-        Skip to main content
+        {t.skipToContent}
       </a>
 
       <div className="bg-ink text-white">
         <div className="container-x flex h-9 items-center justify-end gap-4 text-[11.5px] tracking-[0.06em] sm:gap-6">
-          {navUtility.map((item) => (
+          {utilityItems.map((item) => (
             <Link
               key={item.href + item.label}
               href={item.href}
@@ -154,7 +138,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
             </Link>
           ))}
           <span className="hidden h-3.5 w-px bg-white/20 sm:block" aria-hidden />
-          <div className="flex items-center gap-3" role="group" aria-label="Language">
+          <div className="flex items-center gap-3" role="group" aria-label={t.language}>
             <button
               type="button"
               className={`transition ${locale === "en" ? "font-medium text-white" : "text-white/50 hover:text-white/80"}`}
@@ -185,7 +169,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
           <Logo />
 
           <nav className="hidden items-center gap-7 lg:flex xl:gap-[34px]" aria-label="Primary">
-            {navMain.map((item) =>
+            {navItems.map((item) =>
               item.hasMega ? (
                 <div
                   key={item.href}
@@ -223,7 +207,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
             )}
             <button
               type="button"
-              aria-label="Open search (Ctrl K)"
+              aria-label={t.openSearch}
               onClick={() => setSearchOpen(true)}
               className="ml-1.5 flex h-9 w-9 items-center justify-center rounded-full border-[1.5px] border-[#4A5568] transition hover:border-blue hover:text-blue focus-visible:border-blue"
             >
@@ -237,7 +221,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
           <button
             type="button"
             className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 lg:hidden"
-            aria-label="Open menu"
+            aria-label={t.openMenu}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen(true)}
           >
@@ -267,7 +251,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
                     className="text-[14.5px] font-medium text-ink transition hover:text-blue"
                     onClick={closeOverlays}
                   >
-                    {b.name}
+                    {bizLabel(b.slug, b.name)}
                   </Link>
                 ))}
               </div>
@@ -279,7 +263,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
                     className="text-[14.5px] font-medium text-ink transition hover:text-blue"
                     onClick={closeOverlays}
                   >
-                    {b.name}
+                    {bizLabel(b.slug, b.name)}
                   </Link>
                 ))}
               </div>
@@ -293,13 +277,13 @@ function HeaderChrome({ pathname }: { pathname: string }) {
           className="fixed inset-0 z-[60] flex flex-col bg-ink text-white lg:hidden"
           role="dialog"
           aria-modal="true"
-          aria-label="Mobile navigation"
+          aria-label={t.openMenu}
         >
           <div className="flex h-[60px] items-center justify-between px-5">
             <Logo variant="dark" />
             <button
               type="button"
-              aria-label="Close menu"
+              aria-label={t.closeMenu}
               className="text-2xl leading-none"
               onClick={() => setMobileOpen(false)}
             >
@@ -319,7 +303,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
               {t.search}
             </button>
             <div className="flex flex-col">
-              {navMain.map((item) =>
+              {navItems.map((item) =>
                 item.hasMega ? (
                   <div key={item.href}>
                     <button
@@ -328,7 +312,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
                       onClick={() => setMobileBizOpen((v) => !v)}
                       aria-expanded={mobileBizOpen}
                     >
-                      Businesses
+                      {t.businesses}
                       <span className="text-xs text-blue-soft">
                         {mobileBizOpen ? "−" : "+"}
                       </span>
@@ -349,7 +333,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
                             className="text-sm text-white/80"
                             onClick={closeOverlays}
                           >
-                            {b.name}
+                            {bizLabel(b.slug, b.name)}
                           </Link>
                         ))}
                       </div>
@@ -369,12 +353,17 @@ function HeaderChrome({ pathname }: { pathname: string }) {
             </div>
             <div className="mt-8 flex flex-col gap-3.5">
               <Link href="/contact" className="btn btn-primary h-[50px]" onClick={closeOverlays}>
-                {t.contact}
+                {t.contactUs}
               </Link>
-              <div className="flex gap-4 pt-1.5 text-xs tracking-[0.08em]">
+              <div
+                className="flex gap-4 pt-1.5 text-xs tracking-[0.08em]"
+                role="group"
+                aria-label={t.language}
+              >
                 <button
                   type="button"
                   className={locale === "en" ? "font-medium" : "text-white/45"}
+                  aria-pressed={locale === "en"}
                   onClick={() => setLocale("en")}
                 >
                   EN
@@ -382,6 +371,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
                 <button
                   type="button"
                   className={locale === "bn" ? "font-medium" : "text-white/45"}
+                  aria-pressed={locale === "bn"}
                   onClick={() => setLocale("bn")}
                 >
                   বাংলা
@@ -455,7 +445,7 @@ function HeaderChrome({ pathname }: { pathname: string }) {
           </div>
           <button
             type="button"
-            aria-label="Close search"
+            aria-label={t.closeMenu}
             className="absolute inset-0 -z-10 cursor-default"
             onClick={() => setSearchOpen(false)}
           />

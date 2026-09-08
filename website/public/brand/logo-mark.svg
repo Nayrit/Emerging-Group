@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-label="Emerging Group mark">
+  <rect x="6" y="14" width="22" height="8" fill="#302E7F"/>
+  <rect x="6" y="14" width="8" height="34" fill="#302E7F"/>
+  <rect x="6" y="30" width="18" height="7" fill="#302E7F"/>
+  <path d="M18 48 L54 48 L48 56 L12 56 Z" fill="#50B867"/>
+  <rect x="34" y="18" width="10" height="30" fill="#50B867"/>
+  <circle cx="42" cy="12" r="3.2" fill="#50B867"/>
+  <circle cx="48" cy="7" r="2.2" fill="#50B867"/>
+  <rect x="8" y="49.5" width="8" height="1.4" fill="#0B2240" opacity="0.55"/>
+  <rect x="8" y="52" width="5.5" height="1.4" fill="#0B2240" opacity="0.45"/>
+  <rect x="8" y="54.5" width="3.5" height="1.4" fill="#0B2240" opacity="0.35"/>
+</svg>

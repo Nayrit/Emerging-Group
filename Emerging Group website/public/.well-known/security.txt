@@ -1,4 +1,4 @@
 Contact: mailto:info@emerginggroup.com.bd
 Expires: 2027-12-31T23:59:59.000Z
 Preferred-Languages: en, bn
-Canonical: https://emerginggroup.com.bd/.well-known/security.txt
+Canonical: https://emerginggroupbd.com/.well-known/security.txt

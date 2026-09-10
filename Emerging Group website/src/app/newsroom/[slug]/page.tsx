@@ -59,10 +59,10 @@ export default async function NewsArticlePage({ params }: Props) {
               name: "Emerging Group",
               logo: {
                 "@type": "ImageObject",
-                url: "https://emerginggroup.com.bd/brand/logo.png",
+                url: "https://emerginggroupbd.com/brand/logo.png",
               },
             },
-            mainEntityOfPage: `https://emerginggroup.com.bd/newsroom/${item.slug}`,
+            mainEntityOfPage: `https://emerginggroupbd.com/newsroom/${item.slug}`,
           },
         ]}
       />

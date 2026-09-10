@@ -56,7 +56,7 @@ export default function OpenGraphImage() {
             fontFamily: "sans-serif",
           }}
         >
-          emerginggroup.com.bd
+          emerginggroupbd.com
         </div>
       </div>
     ),

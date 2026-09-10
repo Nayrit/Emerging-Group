@@ -1,4 +1,4 @@
-export const SITE_URL = "https://emerginggroup.com.bd";
+export const SITE_URL = "https://emerginggroupbd.com";
 
 export const defaultDescription =
   "Emerging Group is a diversified enterprise group building Bangladesh's industrial self-reliance across packaging, agro-chemicals, infrastructure, trading, technology and media.";

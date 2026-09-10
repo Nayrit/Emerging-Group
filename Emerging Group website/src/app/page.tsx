@@ -24,7 +24,7 @@ export default function HomePage() {
           name: "Emerging Group Bangladesh",
           description: site.tagline,
           url: absoluteUrl("/"),
-          about: { "@id": "https://emerginggroup.com.bd/#organization" },
+          about: { "@id": "https://emerginggroupbd.com/#organization" },
         }}
       />
       <HomeContent />

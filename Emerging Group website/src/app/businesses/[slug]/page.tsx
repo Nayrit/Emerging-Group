@@ -48,10 +48,10 @@ export default async function BusinessDetailPage({ params }: Props) {
             provider: {
               "@type": "Organization",
               name: "Emerging Group",
-              url: "https://emerginggroup.com.bd",
+              url: "https://emerginggroupbd.com",
             },
             areaServed: "BD",
-            url: `https://emerginggroup.com.bd/businesses/${biz.slug}`,
+            url: `https://emerginggroupbd.com/businesses/${biz.slug}`,
           },
         ]}
       />

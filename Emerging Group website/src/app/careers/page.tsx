@@ -19,7 +19,7 @@ export default function CareersPage() {
     hiringOrganization: {
       "@type": "Organization",
       name: "Emerging Group",
-      sameAs: "https://emerginggroup.com.bd",
+      sameAs: "https://emerginggroupbd.com",
     },
     jobLocation: {
       "@type": "Place",
@@ -33,7 +33,7 @@ export default function CareersPage() {
     datePosted: "2026-08-01",
     validThrough: "2026-12-31",
     directApply: true,
-    url: "https://emerginggroup.com.bd/careers#roles",
+    url: "https://emerginggroupbd.com/careers#roles",
   }));
 
   return (
